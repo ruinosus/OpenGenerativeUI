@@ -13,6 +13,13 @@ from src.form import generate_form
 from src.templates import template_tools
 from skills import load_all_skills
 
+# AAP SDK — ManifestInstance initialization
+from cockpit_aap import ManifestInstance
+
+module = ManifestInstance("open-generative-ui")
+_manifest = module.manifest
+_agent_id = module.default_agent_id
+
 # Load all visualization skills
 _skills_text = load_all_skills()
 
