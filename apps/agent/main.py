@@ -15,7 +15,7 @@ from src.templates import template_tools
 from skills import load_all_skills
 
 # AAP SDK — ManifestInstance initialization
-from cockpit_aap import ManifestInstance
+from cockpit_aap import ManifestInstance, create_guardrail_middleware
 
 module = ManifestInstance("open-generative-ui")
 _manifest = module.manifest
@@ -85,12 +85,24 @@ if _model_config and isinstance(_model_config, dict) and "default" in _model_con
 else:
     _model_name = os.getenv("OPENAI_MODEL", "gpt-5.4-2026-03-05")
 
+# Layer 6.4 — Middleware stack from manifest
+# 1. Guardrail (always first — blocks bad input/output)
+_guardrail = create_guardrail_middleware(module)
+
+# 2. CopilotKit (HITL — always last to catch tool calls)
+_copilotkit_mw = CopilotKitMiddleware()
+
+# Assemble in order: guardrail → CopilotKit
+_middleware = [_guardrail, _copilotkit_mw]
+
 agent = create_agent(
     model=ChatOpenAI(model=_model_name),
     tools=[query_data, *todo_tools, generate_form, *template_tools],
-    middleware=[CopilotKitMiddleware()],
+    middleware=_middleware,
     state_schema=AgentState,
     system_prompt=_instruction,
 )
+
+agent = agent.with_config({"recursion_limit": 1000})
 
 graph = agent
