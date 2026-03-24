@@ -1,0 +1,55 @@
+apiVersion: aap.cockpit.io/v1
+kind: Module
+metadata:
+  name: open-generative-ui-frontend
+  description: >
+    Next.js frontend for OpenGenerativeUI. Integrates CopilotKit runtime/UI
+    and AG-UI middleware for agent-to-UI communication.
+spec:
+  frontend:
+    framework: nextjs
+    packageManager: pnpm
+
+    connections:
+      - id: copilotkit-runtime
+        kind: CopilotKitConnection
+        spec:
+          runtimeEndpoint: /api/copilotkit
+          packages:
+            - name: "@copilotkit/react-core"
+              version: next
+            - name: "@copilotkit/react-ui"
+              version: next
+            - name: "@copilotkit/runtime"
+              version: next
+            - name: "@copilotkitnext/shared"
+              version: next
+
+      - id: ag-ui-middleware
+        kind: AGUIConnection
+        spec:
+          packages:
+            - name: "@ag-ui/a2ui-middleware"
+              version: "^0.0.2"
+            - name: "@ag-ui/mcp-apps-middleware"
+              version: "^0.0.3"
+
+      - id: mcp-server-frontend
+        kind: MCPConnection
+        spec:
+          transport: http
+          baseUrl: http://localhost:3100/mcp
+          sessionHeader: mcp-session-id
+
+    components:
+      - id: template-library
+        path: apps/app/src/components/template-library
+        description: >
+          Seed template library — weather, invoice, and dashboard templates.
+          HTML is the single source of truth for seed template content.
+
+      - id: widget-renderer
+        path: apps/app/src/components
+        description: >
+          Sandboxed iframe renderer for agent-generated HTML widgets.
+          Provides CSS variables, SVG classes, and form styles.
