@@ -23,12 +23,10 @@ _agent_id = module.default_agent_id
 # Load all visualization skills
 _skills_text = load_all_skills()
 
-agent = create_agent(
-    model=ChatOpenAI(model="gpt-5.4-2026-03-05"),
-    tools=[query_data, *todo_tools, generate_form, *template_tools],
-    middleware=[CopilotKitMiddleware()],
-    state_schema=AgentState,
-    system_prompt=f"""
+# Layer 6.2 — Agent instruction from manifest (fallback to hardcoded prompt)
+_instruction = module.agent_instruction()  # Reads from .aap/open-generative-ui/agents/main-agent.md
+if not _instruction:
+    _instruction = f"""
         You are a helpful assistant that helps users understand CopilotKit and LangGraph used together.
 
         Be brief in your explanations of CopilotKit and LangGraph, 1 to 2 sentences.
@@ -77,7 +75,14 @@ agent = create_agent(
         find-and-replace ONLY the data values, and pass the result to widgetRenderer.
         This preserves the exact layout and styling of the original template.
         For bar/pie chart templates, use `barChart` or `pieChart` component instead.
-    """,
+    """
+
+agent = create_agent(
+    model=ChatOpenAI(model="gpt-5.4-2026-03-05"),
+    tools=[query_data, *todo_tools, generate_form, *template_tools],
+    middleware=[CopilotKitMiddleware()],
+    state_schema=AgentState,
+    system_prompt=_instruction,
 )
 
 graph = agent
