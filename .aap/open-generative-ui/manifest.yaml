@@ -11,6 +11,24 @@ spec:
       name: Open Generative UI Agent
       instruction: agents/main-agent.md
       model: gpt-5.4-2026-03-05
+      tools:
+        - query_data
+        - manage_todos
+        - get_todos
+        - generate_form
+        - save_template
+        - list_templates
+        - apply_template
+        - delete_template
+        - clear_pending_template
+
+  connections:
+    - id: agent-backend
+      type: http
+      url: "http://localhost:8000"
+    - id: mcp-server
+      type: mcp
+      url: "http://localhost:3001/mcp"
 
   artifacts:
     - id: open-generative-ui.config.model

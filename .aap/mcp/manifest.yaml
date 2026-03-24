@@ -11,6 +11,14 @@ spec:
       name: Open Generative UI MCP Server
       instruction: agents/mcp-server.md
       model: gpt-4o
+      tools:
+        - assemble_document
+
+  connections:
+    - id: mcp-http-transport
+      type: http
+      url: "http://localhost:3001"
+      description: "HTTP/SSE transport for MCP server sessions"
 
   artifacts:
     - id: mcp.skills.create_widget
