@@ -36,3 +36,45 @@ spec:
       value:
         default: "gpt-5.4-2026-03-05"
         fallback: "gpt-4o"
+
+  i18n:
+    defaultLocale: en
+    locales:
+      - en
+    path: i18n
+
+  theme:
+    presets:
+      - id: light
+        description: "Light mode theme using CSS variables"
+        tokens:
+          color-text-primary: "#111827"
+          color-text-secondary: "#6b7280"
+          color-bg-primary: "#ffffff"
+          color-bg-secondary: "#f9fafb"
+          color-border: "#e5e7eb"
+          color-accent: "#6366f1"
+          font-family: "'Plus Jakarta Sans', sans-serif"
+      - id: dark
+        description: "Dark mode theme using CSS variables"
+        tokens:
+          color-text-primary: "#f9fafb"
+          color-text-secondary: "#9ca3af"
+          color-bg-primary: "#111827"
+          color-bg-secondary: "#1f2937"
+          color-border: "#374151"
+          color-accent: "#818cf8"
+          font-family: "'Plus Jakarta Sans', sans-serif"
+    svgColorRamps:
+      - class: c-purple
+        color: "#8b5cf6"
+      - class: c-teal
+        color: "#14b8a6"
+      - class: c-blue
+        color: "#3b82f6"
+      - class: c-orange
+        color: "#f97316"
+      - class: c-green
+        color: "#22c55e"
+      - class: c-red
+        color: "#ef4444"
