@@ -1,0 +1,43 @@
+apiVersion: aap.cockpit.io/v1
+kind: Module
+metadata:
+  name: open-generative-ui-frontend
+  description: >
+    Next.js frontend for OpenGenerativeUI, integrating CopilotKit runtime,
+    AG-UI middleware, and MCP apps middleware.
+spec:
+  agents:
+    - id: frontend-app
+      name: Open Generative UI Frontend
+      instruction: agents/frontend-app.md
+      model: gpt-4o
+
+  connections:
+    - id: copilotkit-runtime
+      type: http
+      url: "/api/copilotkit"
+      description: "CopilotKit runtime endpoint (Next.js API route)"
+    - id: langgraph-agent
+      type: http
+      url: "${LANGGRAPH_DEPLOYMENT_URL:-http://localhost:8123}"
+      description: "LangGraph agent deployment URL"
+    - id: mcp-apps-server
+      type: mcp
+      url: "${MCP_SERVER_URL:-https://mcp.excalidraw.com}"
+      description: "MCP apps server for external tool integrations"
+
+  frontend:
+    framework: nextjs
+    runtimeUrl: "/api/copilotkit"
+    components:
+      - id: root-layout
+        path: "apps/app/src/app/layout.tsx"
+        provider: CopilotKit
+      - id: copilotkit-route
+        path: "apps/app/src/app/api/copilotkit/route.ts"
+        type: api-route
+    middleware:
+      - type: a2ui
+        package: "@ag-ui/a2ui-middleware"
+      - type: mcp-apps
+        package: "@ag-ui/mcp-apps-middleware"

@@ -6,12 +6,15 @@ import { useGenerativeUIExamples, useExampleSuggestions } from "@/hooks";
 import { ExplainerCardsPortal } from "@/components/explainer-cards";
 import { TemplateLibrary } from "@/components/template-library";
 import { TemplateChip } from "@/components/template-library/template-chip";
+import { useHITLActions } from "@/app/copilot-actions/use-hitl-actions";
 
 import { CopilotChat } from "@copilotkit/react-core/v2";
 
 export default function HomePage() {
   useGenerativeUIExamples();
   useExampleSuggestions();
+  // Layer 6.6 — Wire HITL actions from manifest
+  useHITLActions();
 
   const [templateDrawerOpen, setTemplateDrawerOpen] = useState(false);
 

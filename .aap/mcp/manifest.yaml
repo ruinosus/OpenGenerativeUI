@@ -1,0 +1,32 @@
+apiVersion: aap.cockpit.io/v1
+kind: Module
+metadata:
+  name: open-generative-ui-mcp
+  description: >
+    MCP server exposing skill resources, pre-composed prompts, and the
+    assemble_document tool for the OpenGenerativeUI design system.
+spec:
+  agents:
+    - id: mcp-server
+      name: Open Generative UI MCP Server
+      instruction: agents/mcp-server.md
+      model: gpt-4o
+      tools:
+        - assemble_document
+
+  connections:
+    - id: mcp-http-transport
+      type: http
+      url: "http://localhost:3001"
+      description: "HTTP/SSE transport for MCP server sessions"
+
+  artifacts:
+    - id: mcp.skills.create_widget
+      type: skill
+      path: skills/create-widget.md
+    - id: mcp.skills.create_svg_diagram
+      type: skill
+      path: skills/create-svg-diagram.md
+    - id: mcp.skills.create_visualization
+      type: skill
+      path: skills/create-visualization.md

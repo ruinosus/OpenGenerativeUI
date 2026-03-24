@@ -1,0 +1,115 @@
+apiVersion: aap.cockpit.io/v1
+kind: Module
+metadata:
+  name: open-generative-ui
+  description: >
+    A generative UI agent that helps users understand CopilotKit and LangGraph,
+    produces rich interactive visual responses, and manages reusable UI templates.
+spec:
+  agents:
+    - id: main-agent
+      name: Open Generative UI Agent
+      instruction: agents/main-agent.md
+      model: gpt-5.4-2026-03-05
+      tools:
+        - query_data
+        - manage_todos
+        - get_todos
+        - generate_form
+        - save_template
+        - list_templates
+        - apply_template
+        - delete_template
+        - clear_pending_template
+
+  connections:
+    - id: agent-backend
+      type: http
+      url: "http://localhost:8000"
+    - id: mcp-server
+      type: mcp
+      url: "http://localhost:3001/mcp"
+
+  hitl:
+    tools:
+      - name: confirm_template_save
+        description: "Ask the user to confirm before saving a generated UI as a template"
+        title: "Save Template?"
+        parameters:
+          - name: template_name
+            type: string
+            description: "Name for the template"
+          - name: template_description
+            type: string
+            description: "Description of what the template shows"
+        ui:
+          fields:
+            - name: template_name
+              label: "Template Name"
+            - name: template_description
+              label: "Description"
+      - name: confirm_template_delete
+        description: "Ask the user to confirm before deleting a saved template"
+        title: "Delete Template?"
+        parameters:
+          - name: template_name
+            type: string
+            description: "Name of the template to delete"
+          - name: template_id
+            type: string
+            description: "ID of the template to delete"
+        ui:
+          fields:
+            - name: template_name
+              label: "Template Name"
+            - name: template_id
+              label: "Template ID"
+
+  artifacts:
+    - id: open-generative-ui.config.model
+      type: json
+      value:
+        default: "gpt-5.4-2026-03-05"
+        fallback: "gpt-4o"
+
+  i18n:
+    defaultLocale: en
+    locales:
+      - en
+    path: i18n
+
+  theme:
+    presets:
+      - id: light
+        description: "Light mode theme using CSS variables"
+        tokens:
+          color-text-primary: "#111827"
+          color-text-secondary: "#6b7280"
+          color-bg-primary: "#ffffff"
+          color-bg-secondary: "#f9fafb"
+          color-border: "#e5e7eb"
+          color-accent: "#6366f1"
+          font-family: "'Plus Jakarta Sans', sans-serif"
+      - id: dark
+        description: "Dark mode theme using CSS variables"
+        tokens:
+          color-text-primary: "#f9fafb"
+          color-text-secondary: "#9ca3af"
+          color-bg-primary: "#111827"
+          color-bg-secondary: "#1f2937"
+          color-border: "#374151"
+          color-accent: "#818cf8"
+          font-family: "'Plus Jakarta Sans', sans-serif"
+    svgColorRamps:
+      - class: c-purple
+        color: "#8b5cf6"
+      - class: c-teal
+        color: "#14b8a6"
+      - class: c-blue
+        color: "#3b82f6"
+      - class: c-orange
+        color: "#f97316"
+      - class: c-green
+        color: "#22c55e"
+      - class: c-red
+        color: "#ef4444"

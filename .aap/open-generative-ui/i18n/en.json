@@ -1,0 +1,39 @@
+{
+  "form": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account",
+      "email_placeholder": "Email address",
+      "email_label": "Email",
+      "password_placeholder": "Password",
+      "password_label": "Password",
+      "sign_in_button": "Sign in",
+      "no_account": "Don't have an account?",
+      "sign_up_link": "Sign up"
+    }
+  },
+  "templates": {
+    "seed": {
+      "weather": {
+        "name": "Weather",
+        "description": "Current weather conditions card with temperature, humidity, wind, and UV index"
+      },
+      "invoice": {
+        "name": "Invoice Card",
+        "description": "Compact invoice card with amount, client info, and action buttons"
+      },
+      "dashboard": {
+        "name": "Dashboard",
+        "description": "KPI dashboard with metrics cards and bar chart for quarterly performance"
+      }
+    }
+  },
+  "ui": {
+    "app_title": "Open Generative UI",
+    "chat_placeholder": "Ask me anything...",
+    "template_library_title": "Template Library",
+    "save_template": "Save as Template",
+    "apply_template": "Apply Template",
+    "delete_template": "Delete Template"
+  }
+}

@@ -1,0 +1,41 @@
+apiVersion: governance.cockpit.io/v1
+kind: Guardrail
+metadata:
+  name: open-generative-ui-guardrails
+spec:
+  appliesTo:
+    kind: Module
+    name: open-generative-ui
+  phase: input
+  rules:
+    - id: block-prompt-injection
+      pattern: 'ignore (all |previous |above |prior )?(instructions|prompts|rules|constraints)'
+      onFail: block
+      message: "Potential prompt injection detected. Request blocked."
+    - id: block-jailbreak-attempts
+      pattern: '(pretend|act as|roleplay|simulate|you are now) (a |an )?(different|evil|unrestricted|jailbroken|DAN)'
+      onFail: block
+      message: "Jailbreak attempt detected. Request blocked."
+    - id: block-system-override
+      pattern: '\[SYSTEM\]|\[INST\]|<\|system\|>|<\|im_start\|>'
+      onFail: block
+      message: "System prompt override attempt detected. Request blocked."
+---
+apiVersion: governance.cockpit.io/v1
+kind: Guardrail
+metadata:
+  name: open-generative-ui-output-guardrails
+spec:
+  appliesTo:
+    kind: Module
+    name: open-generative-ui
+  phase: output
+  rules:
+    - id: block-sensitive-data-leak
+      pattern: '(password|secret|api.?key|private.?key)\s*[:=]\s*\S+'
+      onFail: rewrite
+      message: "Potential sensitive data in output redacted."
+    - id: block-script-injection
+      pattern: '<script[^>]*>.*?</script>'
+      onFail: block
+      message: "Script injection in output blocked."

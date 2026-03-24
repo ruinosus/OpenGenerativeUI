@@ -5,6 +5,10 @@ import "@copilotkit/react-core/v2/styles.css";
 
 import { CopilotKit } from "@copilotkit/react-core";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { ManifestProvider } from "@/contexts/manifest-context";
+import { getLocalManifest } from "@/bootstrap/init";
+
+const manifest = getLocalManifest();
 
 export default function RootLayout({children}: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -20,11 +24,13 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         />
       </head>
       <body className="antialiased">
-        <ThemeProvider>
-          <CopilotKit runtimeUrl="/api/copilotkit">
-            {children}
-          </CopilotKit>
-        </ThemeProvider>
+        <ManifestProvider manifest={manifest}>
+          <ThemeProvider>
+            <CopilotKit runtimeUrl="/api/copilotkit">
+              {children}
+            </CopilotKit>
+          </ThemeProvider>
+        </ManifestProvider>
       </body>
     </html>
   );

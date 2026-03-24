@@ -3,7 +3,7 @@ This is the main entry point for the agent.
 It defines the workflow graph, state, tools, nodes and edges.
 """
 
-from copilotkit import CopilotKitMiddleware
+import os
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 
@@ -13,15 +13,23 @@ from src.form import generate_form
 from src.templates import template_tools
 from skills import load_all_skills
 
+# AAP SDK — ManifestInstance initialization
+from cockpit_aap import ManifestInstance, create_guardrail_middleware
+
+# Layer 6.5 — HITL: use patched CopilotKit middleware for DeepAgent state compatibility
+from patched_copilotkit import StatefulCopilotKitMiddleware
+
+module = ManifestInstance("open-generative-ui")
+_manifest = module.manifest
+_agent_id = module.default_agent_id
+
 # Load all visualization skills
 _skills_text = load_all_skills()
 
-agent = create_agent(
-    model=ChatOpenAI(model="gpt-5.4-2026-03-05"),
-    tools=[query_data, *todo_tools, generate_form, *template_tools],
-    middleware=[CopilotKitMiddleware()],
-    state_schema=AgentState,
-    system_prompt=f"""
+# Layer 6.2 — Agent instruction from manifest (fallback to hardcoded prompt)
+_instruction = module.agent_instruction()  # Reads from .aap/open-generative-ui/agents/main-agent.md
+if not _instruction:
+    _instruction = f"""
         You are a helpful assistant that helps users understand CopilotKit and LangGraph used together.
 
         Be brief in your explanations of CopilotKit and LangGraph, 1 to 2 sentences.
@@ -70,7 +78,33 @@ agent = create_agent(
         find-and-replace ONLY the data values, and pass the result to widgetRenderer.
         This preserves the exact layout and styling of the original template.
         For bar/pie chart templates, use `barChart` or `pieChart` component instead.
-    """,
+    """
+
+# Layer 6.3 — Model config from manifest artifacts (fallback to env var / hardcoded)
+_model_config = module.artifact_json("open-generative-ui.config.model")
+if _model_config and isinstance(_model_config, dict) and "default" in _model_config:
+    _model_name = _model_config["default"]
+else:
+    _model_name = os.getenv("OPENAI_MODEL", "gpt-5.4-2026-03-05")
+
+# Layer 6.4 — Middleware stack from manifest
+# 1. Guardrail (always first — blocks bad input/output)
+_guardrail = create_guardrail_middleware(module)
+
+# 2. CopilotKit with HITL state fix (always last to catch tool calls)
+_copilotkit_mw = StatefulCopilotKitMiddleware()
+
+# Assemble in order: guardrail → CopilotKit
+_middleware = [_guardrail, _copilotkit_mw]
+
+agent = create_agent(
+    model=ChatOpenAI(model=_model_name),
+    tools=[query_data, *todo_tools, generate_form, *template_tools],
+    middleware=_middleware,
+    state_schema=AgentState,
+    system_prompt=_instruction,
 )
+
+agent = agent.with_config({"recursion_limit": 1000})
 
 graph = agent
