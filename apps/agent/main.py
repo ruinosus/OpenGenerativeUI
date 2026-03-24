@@ -3,6 +3,7 @@ This is the main entry point for the agent.
 It defines the workflow graph, state, tools, nodes and edges.
 """
 
+import os
 from copilotkit import CopilotKitMiddleware
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
@@ -77,8 +78,15 @@ if not _instruction:
         For bar/pie chart templates, use `barChart` or `pieChart` component instead.
     """
 
+# Layer 6.3 — Model config from manifest artifacts (fallback to env var / hardcoded)
+_model_config = module.artifact_json("open-generative-ui.config.model")
+if _model_config and isinstance(_model_config, dict) and "default" in _model_config:
+    _model_name = _model_config["default"]
+else:
+    _model_name = os.getenv("OPENAI_MODEL", "gpt-5.4-2026-03-05")
+
 agent = create_agent(
-    model=ChatOpenAI(model="gpt-5.4-2026-03-05"),
+    model=ChatOpenAI(model=_model_name),
     tools=[query_data, *todo_tools, generate_form, *template_tools],
     middleware=[CopilotKitMiddleware()],
     state_schema=AgentState,
