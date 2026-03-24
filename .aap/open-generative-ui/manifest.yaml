@@ -1,0 +1,65 @@
+apiVersion: aap.cockpit.io/v1
+kind: Module
+metadata:
+  name: open-generative-ui
+  description: >
+    Generative UI agent powered by CopilotKit and LangGraph. Produces rich,
+    interactive visual responses, manages todo state, and supports reusable
+    UI templates.
+spec:
+  agents:
+    - id: main-agent
+      name: Open Generative UI Agent
+      instruction: agents/main-agent.md
+      model:
+        provider: openai
+        name: gpt-5.4-2026-03-05
+      tools:
+        - query_data
+        - manage_todos
+        - get_todos
+        - generate_form
+        - save_template
+        - list_templates
+        - apply_template
+        - delete_template
+        - clear_pending_template
+
+  artifacts:
+    - id: model-config
+      kind: ModelConfig
+      spec:
+        provider: openai
+        model: gpt-5.4-2026-03-05
+        temperature: 0.7
+
+    - id: seed-templates
+      kind: TemplateRegistry
+      spec:
+        templates:
+          - id: seed-weather-001
+            name: Weather
+            description: >
+              Current weather conditions card with temperature, humidity,
+              wind, and UV index
+            data_description: >
+              City name, date, temperature, condition, humidity, wind
+              speed/direction, UV index
+            version: 1
+          - id: seed-invoice-001
+            name: Invoice Card
+            description: >
+              Compact invoice card with amount, client info, and action buttons
+            data_description: >
+              Title, amount, description, client name, billing month, invoice
+              number, due date
+            version: 1
+          - id: seed-dashboard-001
+            name: Dashboard
+            description: >
+              KPI dashboard with metrics cards and bar chart for quarterly
+              performance
+            data_description: >
+              Title, subtitle, KPI labels/values/changes, monthly bar chart
+              data, legend items
+            version: 1
