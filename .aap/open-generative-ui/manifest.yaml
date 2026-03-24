@@ -143,3 +143,44 @@ spec:
     - id: clear_pending_template
       description: Clear the pending_template from state after applying it.
       inputSchema: {}
+
+  i18n:
+    defaultLocale: en
+    locales:
+      - en
+    bundles:
+      - locale: en
+        path: i18n/en.json
+
+  theme:
+    presets:
+      - id: widget-renderer-light
+        description: CSS variables for light mode widget rendering
+        tokens:
+          color-text-primary: "#111827"
+          color-text-secondary: "#6b7280"
+          color-background: "#ffffff"
+          color-surface: "#f9fafb"
+          color-border: "#e5e7eb"
+          color-accent: "#6366f1"
+
+      - id: widget-renderer-dark
+        description: CSS variables for dark mode widget rendering
+        tokens:
+          color-text-primary: "#f9fafb"
+          color-text-secondary: "#9ca3af"
+          color-background: "#111827"
+          color-surface: "#1f2937"
+          color-border: "#374151"
+          color-accent: "#818cf8"
+
+      - id: svg-color-ramps
+        description: Pre-built SVG CSS color classes used in widget HTML
+        classes:
+          c-purple: "#7c3aed"
+          c-teal: "#0d9488"
+          c-blue: "#2563eb"
+          c-orange: "#ea580c"
+          c-green: "#16a34a"
+          c-red: "#dc2626"
+          c-yellow: "#ca8a04"

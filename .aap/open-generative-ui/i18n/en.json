@@ -1,0 +1,31 @@
+{
+  "form": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account",
+      "email_placeholder": "Email address",
+      "email_label": "Email",
+      "password_placeholder": "Password",
+      "password_label": "Password",
+      "submit_button": "Sign in",
+      "no_account_prompt": "Don't have an account?",
+      "signup_link": "Sign up"
+    }
+  },
+  "templates": {
+    "seed": {
+      "weather": {
+        "name": "Weather",
+        "description": "Current weather conditions card with temperature, humidity, wind, and UV index"
+      },
+      "invoice": {
+        "name": "Invoice Card",
+        "description": "Compact invoice card with amount, client info, and action buttons"
+      },
+      "dashboard": {
+        "name": "Dashboard",
+        "description": "KPI dashboard with metrics cards and bar chart for quarterly performance"
+      }
+    }
+  }
+}
