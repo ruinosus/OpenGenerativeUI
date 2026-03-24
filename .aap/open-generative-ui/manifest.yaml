@@ -63,3 +63,83 @@ spec:
               Title, subtitle, KPI labels/values/changes, monthly bar chart
               data, legend items
             version: 1
+
+  connections:
+    - id: openai-api
+      kind: APIConnection
+      spec:
+        baseUrl: https://api.openai.com/v1
+        authType: bearer
+        secretRef: OPENAI_API_KEY
+
+    - id: mcp-server
+      kind: MCPConnection
+      spec:
+        transport: http
+        baseUrl: http://localhost:3100/mcp
+        sessionHeader: mcp-session-id
+
+  tools:
+    - id: query_data
+      description: >
+        Query the database with natural language. Always call before showing
+        a chart or graph.
+      inputSchema:
+        query:
+          type: string
+          description: Natural language query string
+
+    - id: manage_todos
+      description: Manage (create/update/delete) the current todo list in agent state.
+      inputSchema:
+        todos:
+          type: array
+          description: Full list of todos to set as the new state
+
+    - id: get_todos
+      description: Read the current todo list from agent state.
+      inputSchema: {}
+
+    - id: generate_form
+      description: >
+        Generate a login form surface update for the frontend renderer.
+      inputSchema: {}
+
+    - id: save_template
+      description: Save a generated UI widget as a reusable named template.
+      inputSchema:
+        name:
+          type: string
+        description:
+          type: string
+        html:
+          type: string
+        data_description:
+          type: string
+
+    - id: list_templates
+      description: >
+        List all saved UI templates including built-in seed templates.
+      inputSchema: {}
+
+    - id: apply_template
+      description: >
+        Retrieve a saved template's HTML for adaptation with new data.
+        Checks pending_template in state first.
+      inputSchema:
+        name:
+          type: string
+          description: Template name (fallback if no pending_template)
+        template_id:
+          type: string
+          description: Template ID (fallback if no pending_template)
+
+    - id: delete_template
+      description: Delete a saved UI template by ID.
+      inputSchema:
+        template_id:
+          type: string
+
+    - id: clear_pending_template
+      description: Clear the pending_template from state after applying it.
+      inputSchema: {}

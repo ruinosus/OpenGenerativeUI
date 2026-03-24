@@ -1,0 +1,64 @@
+apiVersion: aap.cockpit.io/v1
+kind: Module
+metadata:
+  name: open-generative-ui-mcp
+  description: >
+    MCP server for OpenGenerativeUI. Exposes skill resources, pre-composed
+    prompts, and the assemble_document tool over HTTP and stdio transports.
+spec:
+  agents:
+    - id: mcp-server
+      name: OpenGenerativeUI MCP Server
+      instruction: agents/mcp-server.md
+      tools:
+        - assemble_document
+
+  connections:
+    - id: mcp-http-transport
+      kind: MCPConnection
+      spec:
+        transport: http
+        baseUrl: http://localhost:3100/mcp
+        sessionHeader: mcp-session-id
+        allowedOrigins:
+          - "*"
+
+  resources:
+    - id: skills-list
+      uri: skills://list
+      description: JSON array of available skill names
+      mimeType: application/json
+
+    - id: skill-by-name
+      uri: "skills://{name}"
+      description: Full text of a named skill instruction document
+      mimeType: text/plain
+
+  prompts:
+    - id: create_widget
+      description: Instructions for creating interactive HTML widgets
+      skill: skills/master-agent-playbook.md
+
+    - id: create_svg_diagram
+      description: Instructions for creating inline SVG diagrams
+      skill: skills/svg-diagram-skill.md
+
+    - id: create_visualization
+      description: Advanced visualization instructions
+      skill: skills/agent-skills-vol2.md
+
+  tools:
+    - id: assemble_document
+      description: >
+        Wraps HTML with OpenGenerativeUI theme CSS, SVG classes, form styles,
+        and bridge JS. Returns a complete iframe-ready HTML document.
+      inputSchema:
+        title:
+          type: string
+          description: Short title for the visualization
+        description:
+          type: string
+          description: One-sentence explanation of what this shows
+        html:
+          type: string
+          description: Self-contained HTML fragment with inline style and script tags
