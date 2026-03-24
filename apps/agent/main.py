@@ -4,7 +4,6 @@ It defines the workflow graph, state, tools, nodes and edges.
 """
 
 import os
-from copilotkit import CopilotKitMiddleware
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 
@@ -16,6 +15,9 @@ from skills import load_all_skills
 
 # AAP SDK — ManifestInstance initialization
 from cockpit_aap import ManifestInstance, create_guardrail_middleware
+
+# Layer 6.5 — HITL: use patched CopilotKit middleware for DeepAgent state compatibility
+from patched_copilotkit import StatefulCopilotKitMiddleware
 
 module = ManifestInstance("open-generative-ui")
 _manifest = module.manifest
@@ -89,8 +91,8 @@ else:
 # 1. Guardrail (always first — blocks bad input/output)
 _guardrail = create_guardrail_middleware(module)
 
-# 2. CopilotKit (HITL — always last to catch tool calls)
-_copilotkit_mw = CopilotKitMiddleware()
+# 2. CopilotKit with HITL state fix (always last to catch tool calls)
+_copilotkit_mw = StatefulCopilotKitMiddleware()
 
 # Assemble in order: guardrail → CopilotKit
 _middleware = [_guardrail, _copilotkit_mw]

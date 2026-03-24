@@ -30,6 +30,41 @@ spec:
       type: mcp
       url: "http://localhost:3001/mcp"
 
+  hitl:
+    tools:
+      - name: confirm_template_save
+        description: "Ask the user to confirm before saving a generated UI as a template"
+        title: "Save Template?"
+        parameters:
+          - name: template_name
+            type: string
+            description: "Name for the template"
+          - name: template_description
+            type: string
+            description: "Description of what the template shows"
+        ui:
+          fields:
+            - name: template_name
+              label: "Template Name"
+            - name: template_description
+              label: "Description"
+      - name: confirm_template_delete
+        description: "Ask the user to confirm before deleting a saved template"
+        title: "Delete Template?"
+        parameters:
+          - name: template_name
+            type: string
+            description: "Name of the template to delete"
+          - name: template_id
+            type: string
+            description: "ID of the template to delete"
+        ui:
+          fields:
+            - name: template_name
+              label: "Template Name"
+            - name: template_id
+              label: "Template ID"
+
   artifacts:
     - id: open-generative-ui.config.model
       type: json
