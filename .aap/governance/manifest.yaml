@@ -1,0 +1,60 @@
+apiVersion: governance.cockpit.io/v1
+kind: Guardrail
+metadata:
+  name: open-generative-ui-guardrails
+  description: >
+    Baseline governance guardrails for OpenGenerativeUI. The application has
+    no existing sanitization or moderation layer; these rules establish a
+    minimum safety posture for input and output.
+spec:
+  appliesTo:
+    kind: Module
+    names:
+      - open-generative-ui
+      - open-generative-ui-mcp
+
+  rules:
+    - id: block-prompt-injection
+      phase: input
+      pattern: "(?i)(ignore (previous|all|above) instructions|disregard (your|the) (system|previous)|you are now|act as)"
+      onFail: block
+      message: >
+        Potential prompt injection detected. The request has been blocked.
+
+    - id: block-pii-ssn-input
+      phase: input
+      pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+      onFail: block
+      message: >
+        Input appears to contain a Social Security Number or similar PII.
+        Please remove sensitive personal data before submitting.
+
+    - id: block-secret-leakage-input
+      phase: input
+      pattern: "sk-[a-zA-Z0-9]{20,}"
+      onFail: block
+      message: >
+        Input appears to contain an API key or secret token. Please remove
+        credentials before submitting.
+
+    - id: block-secret-leakage-output
+      phase: output
+      pattern: "sk-[a-zA-Z0-9]{20,}"
+      onFail: block
+      message: >
+        Output was blocked because it appeared to contain a secret token.
+
+    - id: rewrite-pii-ssn-output
+      phase: output
+      pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+      onFail: rewrite
+      message: >
+        Output contained a potential SSN pattern and was redacted.
+
+    - id: block-unsafe-html-external-script
+      phase: output
+      pattern: "<script[^>]*src=['\"]https?://"
+      onFail: block
+      message: >
+        Output HTML contained an external script tag. Only inline scripts are
+        permitted in widget HTML fragments.
